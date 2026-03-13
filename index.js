@@ -1,8 +1,7 @@
-const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys")
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys")
 const pino = require("pino")
-const config = require("./config")
 
-async function startBot() {
+async function startBot(){
 
 const { state, saveCreds } = await useMultiFileAuthState("session")
 
@@ -12,9 +11,14 @@ auth: state,
 printQRInTerminal: false
 })
 
-if (!sock.authState.creds.registered) {
+sock.ev.on("connection.update", async (update) => {
 
-const number = config.ownernumber
+const { connection } = update
+
+if(connection === "open"){
+
+const number = "584169861331"
+
 const code = await sock.requestPairingCode(number)
 
 console.log("PAIR CODE:", code)
